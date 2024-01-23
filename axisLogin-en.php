@@ -1,6 +1,6 @@
 <?php
 
-$p12File = 'dab-axis.p12';
+$p12File = 'Dab-csrs/dab-axis.p12';
 $p12Password = '1234';
 
 $p12 = file_get_contents($p12File);
@@ -15,6 +15,16 @@ if (openssl_pkcs12_read($p12, $certs, $p12Password)) {
 $user = 'alwebuser';
 $pw = 'acid_qa';
 
+$encryptedbody = '{
+    "Data": {
+            "userName": "'.$en_user.'",
+            "password": "'.$en_pw.'"
+        },
+
+        "Risks": {}
+
+}';
+
 if (openssl_private_encrypt($user, $encryptedData, $privateKey)) {
     $en_user =  base64_encode($encryptedData);
 } else {
@@ -23,6 +33,12 @@ if (openssl_private_encrypt($user, $encryptedData, $privateKey)) {
 
 if (openssl_private_encrypt($pw, $encryptedData, $privateKey)) {
     $en_pw =  base64_encode($encryptedData);
+} else {
+    die('Encryption failed.');
+}
+
+if (openssl_private_encrypt($pw, $encryptedData, $privateKey)) {
+    $en_body =  base64_encode($encryptedbody);
 } else {
     die('Encryption failed.');
 }
@@ -38,15 +54,7 @@ curl_setopt_array($curl, array(
 		CURLOPT_FOLLOWLOCATION => true,
 		CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
 		CURLOPT_CUSTOMREQUEST => 'POST',
-		CURLOPT_POSTFIELDS =>'{
-    "Data": {
-            "userName": "'.$en_user.'",
-            "password": "'.$en_pw.'"
-        },
-
-        "Risks": {}
-
-}',
+		CURLOPT_POSTFIELDS => $en_body,
 		CURLOPT_HTTPHEADER => array(
 				'userName: '.$en_user,
 				'password: '.$en_pw,
