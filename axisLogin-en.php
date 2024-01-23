@@ -49,7 +49,7 @@ curl_setopt_array($curl, array(
 }',
 		CURLOPT_HTTPHEADER => array(
 				'userName: '.$en_user,
-				'password: '$en_pw,
+				'password: '.$en_pw,
 				'x-fapi-channel-id: BB_DialABank',
 				'x-fapi-epoch-millis: 98129812',
 				'x-fapi-uuid: 431222',
