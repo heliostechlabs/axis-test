@@ -1,6 +1,6 @@
 <?php
 
-$p12File = 'Dab-csrs/dab-axis.p12';
+$p12File = 'dab-axis.p12';
 $p12Password = '1234';
 
 $p12 = file_get_contents($p12File);
