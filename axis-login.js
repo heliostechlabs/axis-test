@@ -5,7 +5,7 @@ const { parse } = require('path');
 
 // Read the .p12 file
 const p12FilePath = 'Dab-csrs/dab-axis.p12';
-const p12Password = '1234';
+const p12Password = '';
 
 // Read the .p12 file
 const p12File = fs.readFileSync(p12FilePath);
