@@ -7,11 +7,12 @@ const forge = require('node-forge');
 
 // Function to extract private key and certificate from .p12 file
 function extractPrivateKeyAndCert(p12File, password) {
-  const p12Der = fs.readFileSync(p12File, 'binary');
-  const p12Asn1 = forge.asn1.fromDer(p12Der);
+  const p12Der = fs.readFileSync(p12File);
+  const p12Asn1 = forge.util.createBuffer(p12Der.toString('binary'));
   const p12 = forge.pkcs12.pkcs12FromAsn1(p12Asn1, password);
-  const privateKey = p12.getBags({bagType: forge.pki.oids.pkcs8ShroudedKeyBag})[forge.pki.oids.pkcs8ShroudedKeyBag][0].key;
-  const cert = p12.getBags({bagType: forge.pki.oids.certBag})[forge.pki.oids.certBag][0].cert;
+  const bags = p12.getBags({ bagType: forge.pki.oids.pkcs8ShroudedKeyBag });
+  const privateKey = bags[forge.pki.oids.pkcs8ShroudedKeyBag][0].key;
+  const cert = p12.getBags({ bagType: forge.pki.oids.certBag })[forge.pki.oids.certBag][0].cert;
   return { privateKey, cert };
 }
 
@@ -21,7 +22,6 @@ const p12Password = '';
 
 // Extracting private key and certificate from the .p12 file
 const { privateKey, cert } = extractPrivateKeyAndCert(p12FilePath, p12Password);
-
 
 const agent = new https.Agent({
   pfx: privateKey,
