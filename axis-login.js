@@ -4,7 +4,7 @@ const https = require('https');
 const { parse } = require('path');
 
 // Read the .p12 file
-const p12FilePath = 'Dab-csrs/dab-axis.p12';
+const p12FilePath = 'dab-axis1.pem';
 const p12Password = '';
 
 // Read the .p12 file
