@@ -3,6 +3,19 @@ const fs = require('fs');
 const https = require('https'); 
 const { parse } = require('path');
 
+const forge = require('node-forge');
+
+// Function to extract private key and certificate from .p12 file
+function extractPrivateKeyAndCert(p12File, password) {
+  const p12Asn1 = forge.asn1.fromDer(p12File);
+  const p12 = forge.pkcs12.pkcs12FromAsn1(p12Asn1, password);
+  const privateKey = p12.getBags({bagType: forge.pki.oids.pkcs8ShroudedKeyBag})[forge.pki.oids.pkcs8ShroudedKeyBag][0].key;
+  const cert = p12.getBags({bagType: forge.pki.oids.certBag})[forge.pki.oids.certBag][0].cert;
+  return { privateKey, cert };
+}
+
+
+
 // Read the .p12 file
 const p12FilePath = 'dab-axis1.pem';
 const p12Password = '';
@@ -49,8 +62,3 @@ axios.post('https://sakshamuat.axisbank.co.in/gateway/api/v2/CRMNext/login', req
     console.error(error);
   });
 
-// Function to extract private key and certificate from .p12 file
-function extractPrivateKeyAndCert(p12File, password) {
-  const { privateKey, cert } = require('node-forge').pkcs12FromAsn1(p12File, password);
-  return { privateKey, cert };
-}
