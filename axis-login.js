@@ -1,32 +1,15 @@
 const axios = require('axios');
 const fs = require('fs');
-const https = require('https'); 
-const { parse } = require('path');
+const https = require('https');
 
-const forge = require('node-forge');
+const pemFilePath = 'dab-axis1.pem'; // Path to your combined PEM file
 
-// Function to extract private key and certificate from .p12 file
-function extractPrivateKeyAndCert(p12File, password) {
-  const p12Der = fs.readFileSync(p12File);
-  const p12Asn1 = forge.util.createBuffer(p12Der.toString('binary'));
-  const p12 = forge.pkcs12.pkcs12FromAsn1(p12Asn1, password);
-  const bags = p12.getBags({ bagType: forge.pki.oids.pkcs8ShroudedKeyBag });
-  const privateKey = bags[forge.pki.oids.pkcs8ShroudedKeyBag][0].key;
-  const cert = p12.getBags({ bagType: forge.pki.oids.certBag })[forge.pki.oids.certBag][0].cert;
-  return { privateKey, cert };
-}
-
-// Read the .p12 file
-const p12FilePath = 'dab-axis1.pem';
-const p12Password = '';
-
-// Extracting private key and certificate from the .p12 file
-const { privateKey, cert } = extractPrivateKeyAndCert(p12FilePath, p12Password);
+// Read the combined PEM file
+const pemData = fs.readFileSync(pemFilePath);
 
 const agent = new https.Agent({
-  pfx: privateKey,
-  cert: cert,
-  passphrase: p12Password
+  key: pemData,
+  cert: pemData
 });
 
 const requestBody = {
@@ -58,4 +41,3 @@ axios.post('https://sakshamuat.axisbank.co.in/gateway/api/v2/CRMNext/login', req
   .catch(error => {
     console.error(error);
   });
-
